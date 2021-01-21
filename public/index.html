@@ -12,13 +12,20 @@
 </html>
 
 <script>
+  let screenWidth = window.innerWidth;
+  let screenHeight = window.innerHeight;
+
+
   window.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOMContentLoaded event");
     // load images
     // set div height equal to triple screen window height
-    document.getElementById('triple_blank').style.height = "3000px";
+    document.getElementById('triple_blank').style.height = ( screenHeight * 3) + "px";
     // set an onscroll function to check if scrolling up or down
+
+    // eventlistener for when user changes screen size. use debouncer incase uer is dragging window
   });
 
-  // need a debouncer
+  // need a debouncer or throttle function?
+
 </script>
