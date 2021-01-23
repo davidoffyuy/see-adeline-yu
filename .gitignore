@@ -1,2 +1,2 @@
-/public/img/*
-!/public/img/.gitkeep
+/public/images/*
+!/public/images/.gitkeep
