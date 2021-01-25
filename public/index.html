@@ -10,19 +10,14 @@
 
   <body>
     <div id="image-container">
-      <!-- <img src="images/img02.jpg" width="100%" height="100%"> -->
+      <img src="images/img02.jpg" width="100%" height="100%">
     </div>
-    <div id="center-scroll">test</div>
     <div id="double-blank"></div>
   </body>
 </html>
 
 <script>
   let gv = {};
-  gv.bodyWidth = document.body.clientWidth;
-  gv.bodyHeight = document.body.clientHeight;
-  gv.screenWidth = window.innerWidth;
-  gv.screenHeight = window.innerHeight;
 
   function resetView() {
     console.log("reset view");
@@ -41,17 +36,22 @@
     document.getElementById("double-blank").style.height =
       gv.screenHeight * 2 + "px";
   }
-  const resetViewD = debouncer(() => resetView(), 400);
+  const resetViewD = debouncer(() => resetView(), 300);
 
   // calls during DOM but
   window.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOMContentLoaded event");
     // load images
-    document.getElementById("center-scroll").scrollIntoView();
   });
 
   window.addEventListener("load", (event) => {
     console.log("load event");
+    
+    // Set view/window
+    resetView();
+    window.addEventListener("resize", () => {
+      resetViewD();
+    });
 
     // eventlistener for when user changes screen size. use debouncer incase uer is dragging window
 
@@ -68,9 +68,5 @@
     // need a debouncer or throttle function?
 
     // set an onscroll function to check if scrolling up or down
-
-    window.addEventListener("resize", () => {
-      resetViewD();
-    });
   });
 </script>
