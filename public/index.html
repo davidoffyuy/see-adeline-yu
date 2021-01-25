@@ -3,15 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="index.css" rel="stylesheet">
-    <title>Adelin Yu</title>
+    <link href="index.css" rel="stylesheet" />
+    <script src="js/debounce.js"></script>
+    <title>Adeline Yu</title>
   </head>
 
   <body>
     <div id="image-container">
-      <img src="images/img02.jpg" width="100%" height="100%">
+      <!-- <img src="images/img02.jpg" width="100%" height="100%"> -->
     </div>
-    <div id="triple-blank"></div>
+    <div id="center-scroll">test</div>
+    <div id="double-blank"></div>
   </body>
 </html>
 
@@ -22,26 +24,53 @@
   gv.screenWidth = window.innerWidth;
   gv.screenHeight = window.innerHeight;
 
+  function resetView() {
+    console.log("reset view");
+    gv.bodyWidth = document.body.clientWidth;
+    gv.bodyHeight = document.body.clientHeight;
+    gv.screenWidth = window.innerWidth;
+    gv.screenHeight = window.innerHeight;
 
+    // set the width/height of the image_container
+    document.getElementById("image-container").style.width =
+      gv.bodyWidth + "px";
+    document.getElementById("image-container").style.height =
+      gv.screenHeight + "px";
+
+    // set div height equal to triple screen window height
+    document.getElementById("double-blank").style.height =
+      gv.screenHeight * 2 + "px";
+  }
+  const resetViewD = debouncer(() => resetView(), 400);
+
+  // calls during DOM but
   window.addEventListener("DOMContentLoaded", (event) => {
     console.log("DOMContentLoaded event");
     // load images
-    // set an onscroll function to check if scrolling up or down
-
-    // eventlistener for when user changes screen size. use debouncer incase uer is dragging window
+    document.getElementById("center-scroll").scrollIntoView();
   });
 
-  window.onload = function(e) {
-    console.log("The page has completely loaded.");
+  window.addEventListener("load", (event) => {
+    console.log("load event");
+
+    // eventlistener for when user changes screen size. use debouncer incase uer is dragging window
 
     // set the width/height of the image_container
-    document.getElementById("image-container").style.width = gv.bodyWidth + "px";
-    document.getElementById("image-container").style.height = gv.screenHeight + "px";
+    document.getElementById("image-container").style.width =
+      gv.bodyWidth + "px";
+    document.getElementById("image-container").style.height =
+      gv.screenHeight + "px";
 
     // set div height equal to triple screen window height
-    document.getElementById('triple-blank').style.height = ( gv.screenHeight * 3) + "px";
-  };
+    document.getElementById("double-blank").style.height =
+      gv.screenHeight * 2 + "px";
 
-  // need a debouncer or throttle function?
+    // need a debouncer or throttle function?
 
+    // set an onscroll function to check if scrolling up or down
+
+    window.addEventListener("resize", () => {
+      resetViewD();
+    });
+  });
 </script>
