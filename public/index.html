@@ -3,16 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="index.css" rel="stylesheet" />
+
+    <!-- Styles -->
+    <link href="css/index.css" rel="stylesheet" />
+    <link href="css/spinner.css" rel="stylesheet" />
+
+    <!-- Scripts -->
     <script src="js/debounce.js"></script>
-    <script src="index.js"></script>
+    <script src="js/index.js"></script>
+    
     <title>Adeline Yu</title>
   </head>
 
   <body>
     <div id="image-container">
-      <img src="images/img02.jpg" width="100%" height="100%" />
+      <div id="spinner-container">
+        <div class="spinner">
+          <div class="cube1"></div>
+          <div class="cube2"></div>
+        </div>
+      </div> 
+      <img src="images/img02.jpg" width="100%" height="100%" style="display: none" />
     </div>
+
+    <!-- Used to expand the length of the page to allow for scrolling -->
     <div id="double-blank"></div>
   </body>
 </html>
