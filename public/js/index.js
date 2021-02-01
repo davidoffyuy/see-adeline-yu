@@ -1,29 +1,31 @@
 let gv = {};
+let adeline = {
+  imageUrls: [
+    "http://localhost:3000/adeline/img01.jpg",
+    "http://localhost:3000/adeline/img02.jpg",
+    "http://localhost:3000/adeline/img03.jpg",
+    "http://localhost:3000/adeline/img04.jpg",
+    "http://localhost:3000/adeline/img05.jpg",
+    "http://localhost:3000/adeline/img06.jpg"
+  ],
+  images: [],
+  loadCount: 0
+};
 
-let adelineImages = [
-  "http://localhost:3000/adeline/img01.jpg",
-  "http://localhost:3000/adeline/img02.jpg",
-  "http://localhost:3000/adeline/img03.jpg",
-  "http://localhost:3000/adeline/img04.jpg",
-  "http://localhost:3000/adeline/img05.jpg",
-  "http://localhost:3000/adeline/img06.jpg"
-];
-
-let images = [];
-let loadCount = 0;
-function addLoad() {
-  loadCount++;
-  console.log("loadCount: " + loadCount);
-  if (loadCount === images.length) {
+function checkLoad() {
+  adeline.loadCount++;
+  console.log("loadCount: " + adeline.loadCount);
+  if (adeline.loadCount === adeline.images.length) {
+    // run function to setup image location
     document.getElementById("spinner-container").style.display = "none";
   };
 }
 
 function preloadImages() {
     for (var i = 0; i < arguments.length; i++) {
-        images[i] = new Image();
-        images[i].onload = addLoad;
-        images[i].src = preloadImages.arguments[i];
+        adeline.images[i] = new Image();
+        adeline.images[i].onload = checkLoad;
+        adeline.images[i].src = preloadImages.arguments[i];
     }
 }
 
@@ -70,5 +72,5 @@ window.addEventListener("load", (event) => {
 
   // LAST - clear the loader
   // document.getElementById("spinner-container").style.display = "none";
-  preloadImages(...adelineImages);
+  preloadImages(...adeline.imageUrls);
 });
