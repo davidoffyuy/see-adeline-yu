@@ -9,7 +9,8 @@ let adeline = {
     "http://localhost:3000/adeline/img06.jpg"
   ],
   images: [],
-  loadCount: 0
+  loadCount: 0,
+  loaded: false
 };
 
 function checkLoad() {
@@ -17,19 +18,39 @@ function checkLoad() {
   console.log("loadCount: " + adeline.loadCount);
   if (adeline.loadCount === adeline.images.length) {
     // run function to setup image location
+    adeline.loaded = true;
+    createImageElements();
     document.getElementById("spinner-container").style.display = "none";
   };
 }
 
 function preloadImages() {
     for (var i = 0; i < arguments.length; i++) {
-        adeline.images[i] = new Image();
+        adeline.images[i] = document.createElement('img');
         adeline.images[i].onload = checkLoad;
         adeline.images[i].src = preloadImages.arguments[i];
+        adeline.images[i].classList.add("photo-image", "hide");
     }
 }
 
-function resetView() {
+function createImageElements() {
+  // images will be created and injected into the DOM here
+  let imageContainer = document.getElementById("image-container");
+  adeline.images.forEach(image => {
+    imageContainer.appendChild(image);
+  });
+  setImageLocation();
+}
+
+function setImageLocation() {
+  // images will be set to the location
+  // should be called during initial setup and when window is resized
+  adeline.images.forEach(image => {
+    image.classList.remove("hide");
+  });
+}
+
+function setView() {
   console.log("reset view");
   gv.bodyWidth = document.body.clientWidth;
   gv.bodyHeight = document.body.clientHeight;
@@ -43,7 +64,7 @@ function resetView() {
   // set div height equal to double screen window height
   document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
 }
-const resetViewD = debouncer(() => resetView(), 300);
+const setViewD = debouncer(() => setView(), 300);
 
 // calls during DOM but
 window.addEventListener("DOMContentLoaded", (event) => {
@@ -57,9 +78,9 @@ window.addEventListener("load", (event) => {
   console.log("load event");
 
   // Set view/window
-  resetView();
+  setView();
   window.addEventListener("resize", () => {
-    resetViewD();
+    setViewD();
   });
 
   // set the width/height of the image_container
