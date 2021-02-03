@@ -10,7 +10,8 @@ let adeline = {
   ],
   images: [],
   loadCount: 0,
-  loaded: false
+  loaded: false,
+  currentImage: 0
 };
 
 function checkLoad() {
@@ -45,7 +46,17 @@ function createImageElements() {
 function setImageLocation() {
   // images will be set to the location
   // should be called during initial setup and when window is resized
-  adeline.images.forEach(image => {
+  adeline.images.forEach((image, index) => {
+    console.log("index: " + index);
+    if (index > adeline.currentImage + 1) {   
+      image.classList.add("photo-image_unseen");      
+    }
+    else if (index < adeline.currentImage) {
+      image.classList.add("photo-image_seen");     
+    }
+    else if (index === adeline.currentImage + 1) {
+      image.classList.add("photo-image_next");
+    }
     image.classList.remove("hide");
   });
 }

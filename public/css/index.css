@@ -10,11 +10,27 @@ body {
   display: none;
 }
 
-
 .photo-image {
   object-fit: cover;
+  position: absolute;
   width: 100%;
   height: 100%;
+}
+
+.photo-image_unseen {
+  transform: translateY(100%);
+}
+
+.photo-image_next {
+  transform: translateY(99%);
+}
+
+.photo-image_seen {
+  transform: translateY(-100%);
+}
+
+.photo-image_animate {
+  transition: 1s cubic-bezier(0.45, 0, 0.55, 1);
 }
 
 #image-container {
