@@ -28,19 +28,21 @@ function checkLoad() {
 function preloadImages() {
     for (var i = 0; i < arguments.length; i++) {
         adeline.images[i] = document.createElement('img');
+        adeline.images[i].classList.add("photo-image", "hide");
         adeline.images[i].onload = checkLoad;
         adeline.images[i].src = preloadImages.arguments[i];
-        adeline.images[i].classList.add("photo-image", "hide");
     }
 }
 
-function createImageElements() {
+async function createImageElements() {
   // images will be created and injected into the DOM here
   let imageContainer = document.getElementById("image-container");
   adeline.images.forEach(image => {
     imageContainer.appendChild(image);
   });
   setImageLocation();
+  await new Promise(r => setTimeout(r, 100));
+  popNextImage(adeline.images[adeline.currentImage + 1]);
 }
 
 function setImageLocation() {
@@ -48,17 +50,27 @@ function setImageLocation() {
   // should be called during initial setup and when window is resized
   adeline.images.forEach((image, index) => {
     console.log("index: " + index);
-    if (index > adeline.currentImage + 1) {   
+    if (index > adeline.currentImage) {   
       image.classList.add("photo-image_unseen");      
     }
     else if (index < adeline.currentImage) {
       image.classList.add("photo-image_seen");     
     }
-    else if (index === adeline.currentImage + 1) {
-      image.classList.add("photo-image_next");
-    }
     image.classList.remove("hide");
+    image.classList.add("photo-image_animate");
   });
+  console.log("setImageLocation finish");
+}
+
+function popNextImage(image) {
+  console.log("popNextImage start");
+  // await allowAnimate(image);
+  image.classList.add("photo-image_next");
+}
+
+function allowAnimate(image) {
+  image.classList.remove("photo-image_animate");
+  console.log("finish");
 }
 
 function setView() {
