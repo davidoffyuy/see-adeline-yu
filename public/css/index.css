@@ -30,8 +30,14 @@ body {
   transform: translateY(-100%);
 }
 
+.photo-image_next-jump {
+  transform: translateY(97%);
+  transition: .5s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
 .photo-image_next {
   transform: translateY(99%);
+  transition: .3s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 #image-container {

@@ -41,8 +41,8 @@ async function createImageElements() {
     imageContainer.appendChild(image);
   });
   setImageLocation();
-  await new Promise(r => setTimeout(r, 100));
-  popNextImage(adeline.images[adeline.currentImage + 1]);
+  await sleep(600);
+  await popNextImage(adeline.images[adeline.currentImage + 1]);
 }
 
 function setImageLocation() {
@@ -62,10 +62,25 @@ function setImageLocation() {
   console.log("setImageLocation finish");
 }
 
-function popNextImage(image) {
+async function popNextImage(image) {
   console.log("popNextImage start");
-  // await allowAnimate(image);
+  image.classList.add("photo-image_next-jump");
+  await sleep(600);
   image.classList.add("photo-image_next");
+  image.classList.remove("photo-image_next-jump");
+}
+
+// async function runAnimation(element, className, duration, easing) {
+//   let timeMil = duration * 1000;
+//   element.style.transition = duration + "s" + " " + easing;
+//   element.classList.add(className);
+
+// }
+
+function sleep(duration) {
+  return new Promise(resolve => {
+    setTimeout(resolve, duration);
+  });
 }
 
 function allowAnimate(image) {
