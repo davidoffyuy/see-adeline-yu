@@ -14,6 +14,11 @@ let adeline = {
   currentImage: 0
 };
 
+animotions = {
+  fromUnseenToJump: new Animotion("photo-image_unseen", "photo-image_next-jump", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  fromJumpToNext: new Animotion("photo-image_next-jump", "photo-image_next", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+};
+
 function checkLoad() {
   adeline.loadCount++;
   console.log("loadCount: " + adeline.loadCount);
@@ -64,13 +69,13 @@ function setImageLocation() {
 
 async function popNextImage(image) {
   console.log("popNextImage start");
-  image.classList.add("photo-image_next-jump");
-  await sleep(600);
+  await animotions.fromUnseenToJump.run(image);
+  // await sleep(600);
   image.classList.add("photo-image_next");
   image.classList.remove("photo-image_next-jump");
 }
 
-// async function runAnimation(element, className, duration, easing) {
+// async function runAnimation(element, fromClass, toClass, duration, easing) {
 //   let timeMil = duration * 1000;
 //   element.style.transition = duration + "s" + " " + easing;
 //   element.classList.add(className);
