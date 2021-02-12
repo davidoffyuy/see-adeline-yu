@@ -70,27 +70,16 @@ function setImageLocation() {
 async function popNextImage(image) {
   console.log("popNextImage start");
   await animotions.fromUnseenToJump.run(image);
-  // await sleep(600);
-  image.classList.add("photo-image_next");
-  image.classList.remove("photo-image_next-jump");
+  await sleep(120);
+  // image.classList.add("photo-image_next");
+  // image.classList.remove("photo-image_next-jump");
+  await animotions.fromJumpToNext.run(image);
 }
-
-// async function runAnimation(element, fromClass, toClass, duration, easing) {
-//   let timeMil = duration * 1000;
-//   element.style.transition = duration + "s" + " " + easing;
-//   element.classList.add(className);
-
-// }
 
 function sleep(duration) {
   return new Promise(resolve => {
     setTimeout(resolve, duration);
   });
-}
-
-function allowAnimate(image) {
-  image.classList.remove("photo-image_animate");
-  console.log("finish");
 }
 
 function setView() {
@@ -107,15 +96,16 @@ function setView() {
   // set div height equal to double screen window height
   document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
 }
+
 const setViewD = debouncer(() => setView(), 300);
 
-// calls during DOM but
-window.addEventListener("DOMContentLoaded", (event) => {
-  console.log("DOMContentLoaded event");
+// // calls during DOM
+// window.addEventListener("DOMContentLoaded", (event) => {
+//   console.log("DOMContentLoaded event");
   
-  // display loader
+//   // display loader
   
-});
+// });
 
 window.addEventListener("load", (event) => {
   console.log("load event");

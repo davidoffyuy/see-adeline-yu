@@ -12,7 +12,7 @@ class Animotion {
     console.log(element.classList);
     element.classList.remove(this.fromClass);
     await sleep(this.duration);
-    // element.style.transition = "";
+    element.style.transition = "";
   }
   
   sleep(duration) {
