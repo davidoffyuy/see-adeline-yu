@@ -1,4 +1,6 @@
-let gv = {};
+let gv = {
+  canScroll: false
+};
 let adeline = {
   imageUrls: [
     "http://localhost:3000/adeline/img01.jpg",
@@ -19,14 +21,21 @@ animotions = {
   fromJumpToNext: new Animotion("photo-image_next-jump", "photo-image_next", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
 };
 
-function checkLoad() {
+async function checkLoad() {
   adeline.loadCount++;
   console.log("loadCount: " + adeline.loadCount);
   if (adeline.loadCount === adeline.images.length) {
     // run function to setup image location
     adeline.loaded = true;
-    createImageElements();
+    await createImageElements();
     document.getElementById("spinner-container").style.display = "none";
+    window.addEventListener("scroll", () => {
+      if (gv.canScroll === true) {
+        let scrollRatio = (gv.screenHeight - (window.scrollY * 0.5)) / gv.screenHeight;
+        let translateAmount = (scrollRatio * 98).toString();
+        adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
+      }
+    });
   };
 }
 
@@ -74,6 +83,7 @@ async function popNextImage(image) {
   // image.classList.add("photo-image_next");
   // image.classList.remove("photo-image_next-jump");
   await animotions.fromJumpToNext.run(image);
+  gv.canScroll = true;
 }
 
 function sleep(duration) {
@@ -96,7 +106,6 @@ function setView() {
   // set div height equal to double screen window height
   document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
 }
-
 const setViewD = debouncer(() => setView(), 300);
 
 // // calls during DOM
