@@ -34,6 +34,7 @@ async function checkLoad() {
         let scrollRatio = (gv.screenHeight - (window.scrollY * 0.5)) / gv.screenHeight;
         let translateAmount = (scrollRatio * 98).toString();
         adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
+        checkNextScrollD();
       }
     });
   };
@@ -107,6 +108,18 @@ function setView() {
   document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
 }
 const setViewD = debouncer(() => setView(), 300);
+
+// WIP
+function checkNextScroll() {
+  const nextImage = adeline.images[adeline.currentImage + 1];
+  const nextImageTransformText = nextImage.style.transform;
+  console.log("transform style: " + nextImageTransformText);
+  let start_pos = nextImageTransformText.indexOf('(') + 1;
+  let end_pos = nextImageTransformText.indexOf(')');
+  let percentTranslate = nextImageTransformText.substring(start_pos, end_pos);
+  console.log("translate percentage: " + percentTranslate);
+}
+const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
 
 // // calls during DOM
 // window.addEventListener("DOMContentLoaded", (event) => {
