@@ -84,6 +84,7 @@ async function popNextImage(image) {
   // image.classList.add("photo-image_next");
   // image.classList.remove("photo-image_next-jump");
   await animotions.fromJumpToNext.run(image);
+  window.scrollTo(0,0);
   gv.canScroll = true;
 }
 
@@ -115,11 +116,22 @@ function checkNextScroll() {
   const nextImageTransformText = nextImage.style.transform;
   console.log("transform style: " + nextImageTransformText);
   let start_pos = nextImageTransformText.indexOf('(') + 1;
-  let end_pos = nextImageTransformText.indexOf(')');
+  let end_pos = nextImageTransformText.indexOf('%');
   let percentTranslate = nextImageTransformText.substring(start_pos, end_pos);
   console.log("translate percentage: " + percentTranslate);
+
+  if (percentTranslate < 95) {
+    // showNextImage();
+  }
 }
 const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
+
+function showNextImage() {
+  // disable scrolling by setting gv.canScroll to false
+  // move next image up, increment the next image counter 
+  // pop the new next image with function call of popNextImage()
+}
+
 
 // // calls during DOM
 // window.addEventListener("DOMContentLoaded", (event) => {
