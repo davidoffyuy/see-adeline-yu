@@ -17,9 +17,16 @@ let adeline = {
 };
 
 animotions = {
-  fromUnseenToJump: new Animotion("photo-image_unseen", "photo-image_next-jump", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  fromJumpToNext: new Animotion("photo-image_next-jump", "photo-image_next", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  fromUnseenToJump: new Animotion("transform", "97%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  fromJumpToNext: new Animotion("transform", "99%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
 };
+
+imageTransformState = {
+  unseen: "translateY(100%)",
+  seen: "translateY(-100%)",
+  jump: "translateY(97%)",
+  next: "translateY(99%)"
+}
 
 async function checkLoad() {
   adeline.loadCount++;
@@ -66,13 +73,12 @@ function setImageLocation() {
   adeline.images.forEach((image, index) => {
     console.log("index: " + index);
     if (index > adeline.currentImage) {   
-      image.classList.add("photo-image_unseen");      
+      image.style.transform = imageTransformState.unseen;      
     }
     else if (index < adeline.currentImage) {
-      image.classList.add("photo-image_seen");     
+      image.style.transform = imageTransformState.seen;
     }
     image.classList.remove("hide");
-    image.classList.add("photo-image_animate");
   });
   console.log("setImageLocation finish");
 }

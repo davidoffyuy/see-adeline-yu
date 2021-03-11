@@ -1,16 +1,17 @@
 class Animotion {
-  constructor(fromClass, toClass, duration, easing) {
-    this.fromClass = fromClass;
-    this.toClass = toClass;
+  constructor(cssAttr, toVal, duration, easing) {
+    this.cssAttr = cssAttr;
+    this.toVal = toVal;
     this.duration = duration;
     this.easing = easing;
   }
   
   async run(element) {
     element.style.transition = this.duration + "ms" + " " + this.easing;
-    element.classList.add(this.toClass);
-    console.log(element.classList);
-    element.classList.remove(this.fromClass);
+    // element.classList.add(this.toClass);
+    element.style.transform = "translateY(" + this.toVal + ")";
+    // console.log(element.classList);
+    // element.classList.remove(this.fromClass);
     await sleep(this.duration);
     element.style.transition = "";
   }
