@@ -21,4 +21,8 @@ class Animotion {
       setTimeout(resolve, duration);
     });
   }
+
+  getTranslateY() {
+    return "translateY(" + this.toVal + ")"; 
+  }
 };

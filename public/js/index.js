@@ -17,16 +17,11 @@ let adeline = {
 };
 
 animotions = {
-  fromUnseenToJump: new Animotion("transform", "97%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  fromJumpToNext: new Animotion("transform", "99%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toJump: new Animotion("transform", "97%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toNext: new Animotion("transform", "99%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toUnseen: new Animotion("transform", "100%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toSeen: new Animotion("transform", "0%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
 };
-
-imageTransformState = {
-  unseen: "translateY(100%)",
-  seen: "translateY(-100%)",
-  jump: "translateY(97%)",
-  next: "translateY(99%)"
-}
 
 async function checkLoad() {
   adeline.loadCount++;
@@ -39,7 +34,7 @@ async function checkLoad() {
     window.addEventListener("scroll", () => {
       if (gv.canScroll === true) {
         let scrollRatio = (gv.screenHeight - (window.scrollY * 0.5)) / gv.screenHeight;
-        let translateAmount = (scrollRatio * 98).toString();
+        let translateAmount = (scrollRatio * 99).toString();
         adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
         checkNextScrollD();
       }
@@ -73,10 +68,12 @@ function setImageLocation() {
   adeline.images.forEach((image, index) => {
     console.log("index: " + index);
     if (index > adeline.currentImage) {   
-      image.style.transform = imageTransformState.unseen;      
+      image.style.transform = animotions.toUnseen.getTranslateY();
+      // image.style.transform = imageTransformState.unseen;    
     }
     else if (index < adeline.currentImage) {
-      image.style.transform = imageTransformState.seen;
+      // image.style.transform = imageTransformState.seen;
+      image.style.transform = animotions.toSeen.getTranslateY();
     }
     image.classList.remove("hide");
   });
@@ -85,11 +82,11 @@ function setImageLocation() {
 
 async function popNextImage(image) {
   console.log("popNextImage start");
-  await animotions.fromUnseenToJump.run(image);
+  await animotions.toJump.run(image);
   await sleep(120);
   // image.classList.add("photo-image_next");
   // image.classList.remove("photo-image_next-jump");
-  await animotions.fromJumpToNext.run(image);
+  await animotions.toNext.run(image);
   window.scrollTo(0,0);
   gv.canScroll = true;
 }
@@ -126,8 +123,13 @@ function checkNextScroll() {
   let percentTranslate = nextImageTransformText.substring(start_pos, end_pos);
   console.log("translate percentage: " + percentTranslate);
 
-  if (percentTranslate < 95) {
+  if (percentTranslate < 90) {
     // showNextImage();
+  }
+  else {
+    animotions.toNext.run(nextImage).then(result => {
+      gv.canScroll = true;
+    });
   }
 }
 const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
