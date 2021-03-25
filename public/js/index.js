@@ -1,5 +1,9 @@
 let gv = {
-  canScroll: false
+  canScroll: false,
+  toJump: 97,
+  toNext: 99,
+  toUnseen: 100,
+  toSeen: 0,
 };
 let adeline = {
   imageUrls: [
@@ -8,95 +12,24 @@ let adeline = {
     "http://localhost:3000/adeline/img03.jpg",
     "http://localhost:3000/adeline/img04.jpg",
     "http://localhost:3000/adeline/img05.jpg",
-    "http://localhost:3000/adeline/img06.jpg"
+    "http://localhost:3000/adeline/img06.jpg",
   ],
   images: [],
   loadCount: 0,
   loaded: false,
-  currentImage: 0
+  currentImage: 0,
 };
 
 animotions = {
-  toJump: new Animotion("transform", "97%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toNext: new Animotion("transform", "99%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toUnseen: new Animotion("transform", "100%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toSeen: new Animotion("transform", "0%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toJump: new Animotion("transform", gv.toJump.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toNext: new Animotion("transform", gv.toNext.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toUnseen: new Animotion("transform", gv.toUnseen.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toSeen: new Animotion("transform", gv.toSeen.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
 };
 
-async function checkLoad() {
-  adeline.loadCount++;
-  console.log("loadCount: " + adeline.loadCount);
-  if (adeline.loadCount === adeline.images.length) {
-    // run function to setup image location
-    adeline.loaded = true;
-    await createImageElements();
-    document.getElementById("spinner-container").style.display = "none";
-    window.addEventListener("scroll", () => {
-      if (gv.canScroll === true) {
-        let scrollRatio = (gv.screenHeight - (window.scrollY * 0.5)) / gv.screenHeight;
-        let translateAmount = (scrollRatio * 99).toString();
-        adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
-        checkNextScrollD();
-      }
-    });
-  };
-}
-
-function preloadImages() {
-    for (var i = 0; i < arguments.length; i++) {
-        adeline.images[i] = document.createElement('img');
-        adeline.images[i].classList.add("photo-image", "hide");
-        adeline.images[i].onload = checkLoad;
-        adeline.images[i].src = preloadImages.arguments[i];
-    }
-}
-
-async function createImageElements() {
-  // images will be created and injected into the DOM here
-  let imageContainer = document.getElementById("image-container");
-  adeline.images.forEach(image => {
-    imageContainer.appendChild(image);
-  });
-  setImageLocation();
-  await sleep(600);
-  await popNextImage(adeline.images[adeline.currentImage + 1]);
-}
-
-function setImageLocation() {
-  // images will be set to the location
-  // should be called during initial setup and when window is resized
-  adeline.images.forEach((image, index) => {
-    console.log("index: " + index);
-    if (index > adeline.currentImage) {   
-      image.style.transform = animotions.toUnseen.getTranslateY();
-      // image.style.transform = imageTransformState.unseen;    
-    }
-    else if (index < adeline.currentImage) {
-      // image.style.transform = imageTransformState.seen;
-      image.style.transform = animotions.toSeen.getTranslateY();
-    }
-    image.classList.remove("hide");
-  });
-  console.log("setImageLocation finish");
-}
-
-async function popNextImage(image) {
-  console.log("popNextImage start");
-  await animotions.toJump.run(image);
-  await sleep(120);
-  // image.classList.add("photo-image_next");
-  // image.classList.remove("photo-image_next-jump");
-  await animotions.toNext.run(image);
-  window.scrollTo(0,0);
-  gv.canScroll = true;
-}
-
-function sleep(duration) {
-  return new Promise(resolve => {
-    setTimeout(resolve, duration);
-  });
-}
-
+// Called to set global variables of the window and body so the application can calculate location of objects
+// Called during initial setup and when window is resized.
+// Debouncer used when resizing may be triggered too often.
 function setView() {
   console.log("reset view");
   gv.bodyWidth = document.body.clientWidth;
@@ -113,21 +46,95 @@ function setView() {
 }
 const setViewD = debouncer(() => setView(), 300);
 
+// Creates all images set in the adeline.imageUrls array and sets URL
+// Sets each image onload with checkLoad function to be run after each image loads
+function preloadImages() {
+  for (var i = 0; i < arguments.length; i++) {
+    adeline.images[i] = document.createElement("img");
+    adeline.images[i].classList.add("photo-image", "hide");
+    adeline.images[i].onload = checkLoad;
+    adeline.images[i].src = preloadImages.arguments[i];
+  }
+}
+
+async function checkLoad() {
+  adeline.loadCount++;
+  console.log("loadCount: " + adeline.loadCount);
+  if (adeline.loadCount === adeline.images.length) {
+    // run function to setup image location
+    adeline.loaded = true;
+    await insertImageElements();
+    document.getElementById("spinner-container").style.display = "none";
+    window.addEventListener("scroll", () => {
+      if (gv.canScroll === true) {
+        let scrollRatio = (gv.screenHeight - window.scrollY * 0.5) / gv.screenHeight;
+        let translateAmount = (scrollRatio * 99).toString();
+        adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
+        checkNextScrollD();
+      }
+    });
+  }
+}
+
+async function insertImageElements() {
+  // images will be created and injected into the DOM here
+  let imageContainer = document.getElementById("image-container");
+  adeline.images.forEach((image) => {
+    imageContainer.appendChild(image);
+  });
+  setImageLocation();
+  await sleep(600);
+  await popNextImage(adeline.images[adeline.currentImage + 1]);
+}
+
+function setImageLocation() {
+  // images will be set to the location
+  // should be called during initial setup and when window is resized
+  adeline.images.forEach((image, index) => {
+    console.log("index: " + index);
+    if (index > adeline.currentImage) {
+      image.style.transform = animotions.toUnseen.getTranslateY();
+      // image.style.transform = imageTransformState.unseen;
+    } else if (index < adeline.currentImage) {
+      // image.style.transform = imageTransformState.seen;
+      image.style.transform = animotions.toSeen.getTranslateY();
+    }
+    image.classList.remove("hide");
+  });
+  console.log("setImageLocation finish");
+}
+
+async function popNextImage(image) {
+  console.log("popNextImage start");
+  await animotions.toJump.run(image);
+  await sleep(120);
+  // image.classList.add("photo-image_next");
+  // image.classList.remove("photo-image_next-jump");
+  await animotions.toNext.run(image);
+  window.scrollTo(0, 0);
+  gv.canScroll = true;
+}
+
+function sleep(duration) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, duration);
+  });
+}
+
 // WIP
 function checkNextScroll() {
   const nextImage = adeline.images[adeline.currentImage + 1];
   const nextImageTransformText = nextImage.style.transform;
   console.log("transform style: " + nextImageTransformText);
-  let start_pos = nextImageTransformText.indexOf('(') + 1;
-  let end_pos = nextImageTransformText.indexOf('%');
+  let start_pos = nextImageTransformText.indexOf("(") + 1;
+  let end_pos = nextImageTransformText.indexOf("%");
   let percentTranslate = nextImageTransformText.substring(start_pos, end_pos);
   console.log("translate percentage: " + percentTranslate);
 
   if (percentTranslate < 90) {
     // showNextImage();
-  }
-  else {
-    animotions.toNext.run(nextImage).then(result => {
+  } else {
+    animotions.toNext.run(nextImage).then((result) => {
       gv.canScroll = true;
     });
   }
@@ -136,17 +143,16 @@ const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
 
 function showNextImage() {
   // disable scrolling by setting gv.canScroll to false
-  // move next image up, increment the next image counter 
+  // move next image up, increment the next image counter
   // pop the new next image with function call of popNextImage()
 }
-
 
 // // calls during DOM
 // window.addEventListener("DOMContentLoaded", (event) => {
 //   console.log("DOMContentLoaded event");
-  
+
 //   // display loader
-  
+
 // });
 
 window.addEventListener("load", (event) => {
