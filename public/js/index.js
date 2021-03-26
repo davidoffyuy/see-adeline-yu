@@ -1,4 +1,4 @@
-let gv = {
+let globe = {
   canScroll: false,
   toJump: 97,
   toNext: 99,
@@ -21,10 +21,10 @@ let adeline = {
 };
 
 animotions = {
-  toJump: new Animotion("transform", gv.toJump.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toNext: new Animotion("transform", gv.toNext.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toUnseen: new Animotion("transform", gv.toUnseen.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
-  toSeen: new Animotion("transform", gv.toSeen.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toJump: new Animotion("transform", globe.toJump.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toNext: new Animotion("transform", globe.toNext.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toUnseen: new Animotion("transform", globe.toUnseen.toString() + "%", 500, "cubic-bezier(0.33, 1, 0.68, 1)"),
+  toSeen: new Animotion("transform", globe.toSeen.toString() + "%", 300, "cubic-bezier(0.33, 1, 0.68, 1)"),
 };
 
 // Called to set global variables of the window and body so the application can calculate location of objects
@@ -32,17 +32,17 @@ animotions = {
 // Debouncer used when resizing may be triggered too often.
 function setView() {
   console.log("reset view");
-  gv.bodyWidth = document.body.clientWidth;
-  gv.bodyHeight = document.body.clientHeight;
-  gv.screenWidth = window.innerWidth;
-  gv.screenHeight = window.innerHeight;
+  globe.bodyWidth = document.body.clientWidth;
+  globe.bodyHeight = document.body.clientHeight;
+  globe.screenWidth = window.innerWidth;
+  globe.screenHeight = window.innerHeight;
 
   // set the width/height of the image_container
-  document.getElementById("image-container").style.width = gv.bodyWidth + "px";
-  document.getElementById("image-container").style.height = gv.screenHeight + "px";
+  document.getElementById("image-container").style.width = globe.bodyWidth + "px";
+  document.getElementById("image-container").style.height = globe.screenHeight + "px";
 
   // set div height equal to double screen window height
-  document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
+  document.getElementById("double-blank").style.height = globe.screenHeight * 2 + "px";
 }
 const setViewD = debouncer(() => setView(), 300);
 
@@ -65,14 +65,7 @@ async function checkLoad() {
     adeline.loaded = true;
     await insertImageElements();
     document.getElementById("spinner-container").style.display = "none";
-    window.addEventListener("scroll", () => {
-      if (gv.canScroll === true) {
-        let scrollRatio = (gv.screenHeight - window.scrollY * 0.5) / gv.screenHeight;
-        let translateAmount = (scrollRatio * 99).toString();
-        adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
-        checkNextScrollD();
-      }
-    });
+    window.addEventListener("scroll", handleScroll);
   }
 }
 
@@ -85,6 +78,15 @@ async function insertImageElements() {
   setImageLocation();
   await sleep(600);
   await popNextImage(adeline.images[adeline.currentImage + 1]);
+}
+
+function handleScroll() {
+  if (globe.canScroll === true) {
+    let scrollRatio = (globe.screenHeight - window.scrollY * 0.5) / globe.screenHeight;
+    let translateAmount = (scrollRatio * 99).toString();
+    adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
+    checkNextScrollD();
+  }
 }
 
 function setImageLocation() {
@@ -112,7 +114,7 @@ async function popNextImage(image) {
   // image.classList.remove("photo-image_next-jump");
   await animotions.toNext.run(image);
   window.scrollTo(0, 0);
-  gv.canScroll = true;
+  globe.canScroll = true;
 }
 
 function sleep(duration) {
@@ -135,14 +137,14 @@ function checkNextScroll() {
     // showNextImage();
   } else {
     animotions.toNext.run(nextImage).then((result) => {
-      gv.canScroll = true;
+      globe.canScroll = true;
     });
   }
 }
 const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
 
 function showNextImage() {
-  // disable scrolling by setting gv.canScroll to false
+  // disable scrolling by setting globe.canScroll to false
   // move next image up, increment the next image counter
   // pop the new next image with function call of popNextImage()
 }
@@ -166,11 +168,11 @@ window.addEventListener("load", (event) => {
 
   // set the width/height of the image_container
   const imageContainer = document.getElementById("image-container");
-  imageContainer.style.width = gv.bodyWidth + "px";
-  imageContainer.style.height = gv.screenHeight + "px";
+  imageContainer.style.width = globe.bodyWidth + "px";
+  imageContainer.style.height = globe.screenHeight + "px";
 
   // set div height equal to triple screen window height
-  document.getElementById("double-blank").style.height = gv.screenHeight * 2 + "px";
+  document.getElementById("double-blank").style.height = globe.screenHeight * 2 + "px";
 
   // LAST - clear the loader
   // document.getElementById("spinner-container").style.display = "none";
