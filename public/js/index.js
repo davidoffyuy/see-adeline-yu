@@ -4,6 +4,7 @@ let globe = {
   toNext: 99,
   toUnseen: 100,
   toSeen: 0,
+  toScrollNext: 90,
 };
 let adeline = {
   imageUrls: [
@@ -17,7 +18,7 @@ let adeline = {
   images: [],
   loadCount: 0,
   loaded: false,
-  currentImage: 0,
+  currentImageIndex: 0,
 };
 
 animotions = {
@@ -77,16 +78,7 @@ async function insertImageElements() {
   });
   setImageLocation();
   await sleep(600);
-  await popNextImage(adeline.images[adeline.currentImage + 1]);
-}
-
-function handleScroll() {
-  if (globe.canScroll === true) {
-    let scrollRatio = (globe.screenHeight - window.scrollY * 0.5) / globe.screenHeight;
-    let translateAmount = (scrollRatio * 99).toString();
-    adeline.images[adeline.currentImage + 1].style.transform = "translateY(" + translateAmount + "%)";
-    checkNextScrollD();
-  }
+  await popNextImage(adeline.images[adeline.currentImageIndex + 1]);
 }
 
 function setImageLocation() {
@@ -94,16 +86,25 @@ function setImageLocation() {
   // should be called during initial setup and when window is resized
   adeline.images.forEach((image, index) => {
     console.log("index: " + index);
-    if (index > adeline.currentImage) {
+    if (index > adeline.currentImageIndex) {
       image.style.transform = animotions.toUnseen.getTranslateY();
       // image.style.transform = imageTransformState.unseen;
-    } else if (index < adeline.currentImage) {
+    } else if (index < adeline.currentImageIndex) {
       // image.style.transform = imageTransformState.seen;
       image.style.transform = animotions.toSeen.getTranslateY();
     }
     image.classList.remove("hide");
   });
   console.log("setImageLocation finish");
+}
+
+function handleScroll() {
+  if (globe.canScroll === true) {
+    let scrollRatio = (globe.screenHeight - window.scrollY * 0.5) / globe.screenHeight;
+    let translateAmount = (scrollRatio * globe.toNext).toString();
+    adeline.images[adeline.currentImageIndex + 1].style.transform = "translateY(" + translateAmount + "%)";
+    checkNextScrollD();
+  }
 }
 
 async function popNextImage(image) {
@@ -124,8 +125,11 @@ function sleep(duration) {
 }
 
 // WIP
-function checkNextScroll() {
-  const nextImage = adeline.images[adeline.currentImage + 1];
+async function checkNextScroll() {
+  globe.canScroll = false;
+  const nextImage = adeline.images[adeline.currentImageIndex + 1];
+
+  // get the transform style percentage value for comparison
   const nextImageTransformText = nextImage.style.transform;
   console.log("transform style: " + nextImageTransformText);
   let start_pos = nextImageTransformText.indexOf("(") + 1;
@@ -133,13 +137,18 @@ function checkNextScroll() {
   let percentTranslate = nextImageTransformText.substring(start_pos, end_pos);
   console.log("translate percentage: " + percentTranslate);
 
-  if (percentTranslate < 90) {
-    // showNextImage();
-  } else {
-    animotions.toNext.run(nextImage).then((result) => {
-      globe.canScroll = true;
-    });
+  if ((percentTranslate < globe.toScrollNext)) {
+    console.log("moving");
+    adeline.currentImageIndex += 1;
+    animotions.toSeen.run(nextImage);
+    await animotions.toJump.run(adeline.images[adeline.currentImageIndex + 1]);
+    await animotions.toNext.run(adeline.images[adeline.currentImageIndex + 1]);
+  } 
+  else {
+    await animotions.toNext.run(nextImage);
   }
+  window.scrollTo(0, 0);
+  globe.canScroll = true;
 }
 const checkNextScrollD = debouncer(() => checkNextScroll(), 300);
 
